@@ -9,6 +9,10 @@ Route::prefix('v1')->group(function () {
 
     // Public catalog routes (Products, Categories, Stores) go here...
 });
+Route::prefix('v1')->group(function () {
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{slug}', [ProductController::class, 'show']);
+});
 
 // Protected Routes (Requires valid Sanctum Token)
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
@@ -30,5 +34,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     // Admin Routes
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         // Store Approvals, Category CRUD, Platform Settings...
+    });
+
+    Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('role:vendor')->prefix('vendor')->group(function () {
+        Route::get('/products', [ProductController::class, 'vendorProducts']);
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    });
     });
 });
