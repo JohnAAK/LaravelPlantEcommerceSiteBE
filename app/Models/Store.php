@@ -66,4 +66,14 @@ class Store extends Model
     {
         return $query->where('status', self::STATUS_APPROVED);
     }
+
+        public function reviews()
+    {
+        return $this->hasManyThrough(Review::class, Product::class);
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->reviews()->where('reviews.is_approved', true)->avg('rating') ?? 0, 1);
+    }
 }
